@@ -149,6 +149,22 @@
 	<script src="js/db.js" defer></script>
     <script src="js/vision.js" defer></script>
 	<script>
+		// Verify required libraries are loaded
+		window.addEventListener('load', () => {
+			const missingLibs = [];
+			if (typeof FaceMesh === 'undefined') missingLibs.push('MediaPipe FaceMesh');
+			if (typeof tf === 'undefined') missingLibs.push('TensorFlow.js');
+			if (typeof faceLandmarksDetection === 'undefined') missingLibs.push('Face Landmarks Detection');
+			
+			if (missingLibs.length > 0) {
+				console.error('Missing libraries:', missingLibs);
+				const warningEl = document.getElementById('vt-warning');
+				if (warningEl) {
+					warningEl.textContent = `Some libraries failed to load: ${missingLibs.join(', ')}. Please check your internet connection and refresh.`;
+				}
+			}
+		});
+
 		// Enhanced camera distance and eye attention using MediaPipe FaceMesh
 		(function () {
 			const INTER_EYE_DISTANCE_CM = 5.5; // average interpupillary distance
@@ -283,24 +299,40 @@
 
 			async function ensureFaceMesh() {
 				if (faceMesh) return faceMesh;
+				
+				// Wait for MediaPipe libraries to load
+				let retries = 0;
+				while (typeof FaceMesh === 'undefined' && retries < 10) {
+					await new Promise(resolve => setTimeout(resolve, 500));
+					retries++;
+				}
+				
 				if (typeof FaceMesh === 'undefined') {
-					console.warn('MediaPipe FaceMesh not loaded. Check network connection and HTTPS.');
+					console.error('MediaPipe FaceMesh library not loaded. Check if CDN scripts loaded correctly.');
 					if (warningEl) {
-						warningEl.textContent = 'Face detection model not loaded. Please check your internet connection and ensure the site uses HTTPS.';
+						warningEl.textContent = 'Face detection library not loaded. Please refresh the page or check your internet connection.';
 					}
 					return null;
 				}
+				
 				try {
+					console.log('Initializing MediaPipe FaceMesh...');
 					faceMesh = new FaceMesh({
 						locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
 					});
-					faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+					faceMesh.setOptions({ 
+						maxNumFaces: 1, 
+						refineLandmarks: true, 
+						minDetectionConfidence: 0.5, 
+						minTrackingConfidence: 0.5 
+					});
 					faceMesh.onResults(onResults);
+					console.log('MediaPipe FaceMesh initialized successfully');
 					return faceMesh;
 				} catch (e) {
 					console.error('FaceMesh initialization error:', e);
 					if (warningEl) {
-						warningEl.textContent = 'Failed to initialize face detection. Please refresh the page.';
+						warningEl.textContent = `Failed to initialize face detection: ${e.message || e.toString()}. Please refresh the page.`;
 					}
 					return null;
 				}
