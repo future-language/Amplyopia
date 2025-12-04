@@ -246,16 +246,21 @@ function butterfliesGame(startGameCallback) {
     const sndCorrect = document.getElementById('bf-sound-correct');
     const sndWrong = document.getElementById('bf-sound-wrong');
 
-    const butterflyImages = [
-      'img/butterfly (1).png','img/butterfly (2).png','img/butterfly (3).png','img/butterfly (4).png','img/butterfly (5).png',
-      'img/butterfly.png','img/butterfly (6).png','img/silk-butterfly.png','img/butterfly (8).png','img/butterfly (9).png',
-      'img/butterfly (10).png','img/butterfly (11).png','img/butterfly (12).png','img/butterfly (13).png','img/butterfly (15).png',
-      'img/butterfly (16).png','img/butterfly (17).png','img/butterfly (18).png','img/butterfly (19).png','img/nature.png',
-      'img/butterfly (20).png','img/retro.png','img/stripes-wings-light-butterfly-beautiful-design-from-top-view.png','./img/summer (1).png',
-      'img/butterfly (21).png','img/butterfly (23).png','img/butterfly (24).png','img/butterfly (25).png','img/butterfly (26).png',
-      'img/butterfly (27).png','img/nature (1).png','img/butterfly (28).png','img/butterfly (29).png','img/butterfly (30).png',
-      'img/fly.png','img/butterfly (31).png','img/butterfly (32).png','img/insect.png','img/hand.png','img/summer.png'
-    ];
+  const butterflyImages = [
+  'img/butterfly (1).png','img/butterfly (2).png','img/butterfly (3).png',
+  'img/butterfly.png','img/butterfly (6).png','img/silk-butterfly.png',
+  'img/butterfly (9).png','img/butterfly (10).png','img/butterfly (11).png',
+  'img/butterfly (12).png','img/butterfly (13).png','img/butterfly (15).png',
+  'img/butterfly (16).png','img/butterfly (17).png','img/butterfly (18).png',
+  'img/butterfly (19).png','img/nature.png','img/butterfly (20).png',
+  'img/retro.png','img/stripes-wings-light-butterfly-beautiful-design-from-top-view.png',
+  'img/summer (1).png','img/butterfly (21).png','img/butterfly (23).png',
+  'img/butterfly (24).png','img/butterfly (26).png','img/butterfly (27).png',
+  'img/nature (1).png','img/butterfly (28).png','img/butterfly (29).png',
+  'img/butterfly (30).png','img/fly.png','img/butterfly (31).png',
+  'img/butterfly (32).png','img/hand.png'
+];
+
 
     function start(isResume = false) {
       updateUI();
@@ -1388,4 +1393,5 @@ window.onload = function () {
         }, 2400);
     }, 2400);
 };
+
 
