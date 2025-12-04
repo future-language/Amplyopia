@@ -185,20 +185,64 @@
             try { await video.play(); } catch (_) {}
             await waitForVideoReady();
 
-            if (!model && window.faceLandmarksDetection) {
+            if (!model) {
+                // Check if required libraries are loaded
+                if (!window.faceLandmarksDetection) {
+                    console.error('faceLandmarksDetection library not loaded. Check if CDN script loaded correctly.');
+                    warningEl.textContent = 'Face detection library not loaded. Please refresh the page or check your internet connection.';
+                    return;
+                }
+
+                if (!window.tf) {
+                    console.error('TensorFlow.js library not loaded. Check if CDN script loaded correctly.');
+                    warningEl.textContent = 'TensorFlow.js library not loaded. Please refresh the page or check your internet connection.';
+                    return;
+                }
+
                 try {
-                    if (window.tf && tf.ready) {
-                        await tf.ready();
-                        if (tf.setBackend) {
-                            try { await tf.setBackend('webgl'); } catch (_) {}
+                    // Initialize TensorFlow.js with timeout
+                    const tfReady = Promise.race([
+                        tf.ready(),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error('TensorFlow.js initialization timeout')), 10000))
+                    ]);
+                    await tfReady;
+
+                    // Try to set backend (optional, will fallback to default)
+                    if (tf.setBackend) {
+                        try { 
+                            await Promise.race([
+                                tf.setBackend('webgl'),
+                                new Promise((_, reject) => setTimeout(() => reject(new Error('Backend setup timeout')), 5000))
+                            ]);
+                        } catch (backendErr) {
+                            console.warn('WebGL backend not available, using default:', backendErr);
                         }
                     }
-                    model = await faceLandmarksDetection.load(
+
+                    // Load face model with timeout
+                    console.log('Loading face detection model...');
+                    const loadPromise = faceLandmarksDetection.load(
                         faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
                     );
+                    const timeoutPromise = new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Model loading timeout after 30 seconds')), 30000)
+                    );
+                    
+                    model = await Promise.race([loadPromise, timeoutPromise]);
+                    console.log('Face detection model loaded successfully');
+                    warningEl.textContent = '';
                 } catch (e) {
                     console.error('Face model loading error:', e);
-                    warningEl.textContent = 'Face model failed to load. Check browser console for details.';
+                    const errorMsg = e.message || e.toString();
+                    if (errorMsg.includes('timeout')) {
+                        warningEl.textContent = 'Face model loading timed out. This may be due to slow internet. Please refresh and try again.';
+                    } else if (errorMsg.includes('Failed to fetch') || errorMsg.includes('network')) {
+                        warningEl.textContent = 'Network error loading face model. Please check your internet connection and refresh.';
+                    } else {
+                        warningEl.textContent = `Face model failed to load: ${errorMsg}. Please refresh the page.`;
+                    }
+                    // Don't return - allow camera to work even without face detection model
+                    // The MediaPipe FaceMesh in vision-test.html will handle distance detection
                 }
             }
             detectionLoop();
@@ -278,7 +322,14 @@
     }
 
     function detectionLoop() {
-        if (!model || !streamActive || detectionRunning) return;
+        // Only run if we have a model - MediaPipe FaceMesh in vision-test.html will handle distance if this fails
+        if (!model || !streamActive || detectionRunning) {
+            // If model failed to load, show a message but don't block the test
+            if (!model && streamActive && !detectionRunning) {
+                console.warn('TensorFlow face model not available, but MediaPipe FaceMesh should handle distance detection');
+            }
+            return;
+        }
         detectionRunning = true;
         const step = async () => {
             if (!model || !streamActive) { detectionRunning = false; return; }
@@ -316,7 +367,10 @@
                     warningEl.textContent = 'No face detected. Make sure your face is visible.';
                     setReadyState(false);
                 }
-            } catch (_) {}
+            } catch (e) {
+                console.error('Face detection error:', e);
+                // Don't stop the loop on occasional errors
+            }
             requestAnimationFrame(step);
         };
         requestAnimationFrame(step);
