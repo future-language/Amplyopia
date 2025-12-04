@@ -151,6 +151,20 @@
 
     async function enableCamera() {
         try {
+            // Check for HTTPS requirement first
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                warningEl.textContent = '⚠️ Camera requires HTTPS. Your domain (amplyopia.com) must use HTTPS for camera access. Please enable SSL/HTTPS on your hosting provider.';
+                console.error('Camera access blocked: HTTPS required. Current protocol:', location.protocol);
+                return;
+            }
+
+            // Check if getUserMedia is available
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                warningEl.textContent = 'Camera API not available. Your browser may not support camera access or the page is not secure.';
+                console.error('getUserMedia not available');
+                return;
+            }
+
             // Try to query permission state first (best-effort)
             if (navigator.permissions && navigator.permissions.query) {
                 try {
@@ -183,20 +197,22 @@
                         faceLandmarksDetection.SupportedPackages.mediapipeFacemesh
                     );
                 } catch (e) {
-                    warningEl.textContent = 'Face model failed to load.';
+                    console.error('Face model loading error:', e);
+                    warningEl.textContent = 'Face model failed to load. Check browser console for details.';
                 }
             }
             detectionLoop();
         } catch (e) {
+            console.error('Camera access error:', e);
             // Handle insecure context and permission issues explicitly
-            if (location.protocol !== 'https:' && location.hostname !== 'localhost') {
-                warningEl.textContent = 'Camera requires HTTPS or localhost. Open this page over HTTPS or run a local server.';
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                warningEl.textContent = '⚠️ Camera requires HTTPS. Enable SSL/HTTPS on amplyopia.com. GitHub Pages provides HTTPS automatically, but your custom domain needs SSL configured.';
             } else if (e && (e.name === 'NotAllowedError' || e.name === 'SecurityError')) {
                 warningEl.textContent = 'Camera permission denied. Click "Toggle Camera" and allow access, or enable it in site settings.';
             } else if (e && (e.name === 'NotFoundError' || e.name === 'OverconstrainedError')) {
                 warningEl.textContent = 'No suitable camera found. Check that a camera is connected and not in use.';
             } else {
-                warningEl.textContent = 'Unable to access camera. Please grant permission in your browser.';
+                warningEl.textContent = `Unable to access camera: ${e.message || e.name || 'Unknown error'}. Please grant permission in your browser.`;
             }
         }
     }
