@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Permissions-Policy" content="camera=*, microphone=()">
     <title>Vision Test • VisionCare</title>
     <meta name="description" content="Vision test with camera distance check and E orientation.">
     <link rel="stylesheet" href="css/styles.css">
@@ -282,13 +283,27 @@
 
 			async function ensureFaceMesh() {
 				if (faceMesh) return faceMesh;
-				if (typeof FaceMesh === 'undefined') return null;
-				faceMesh = new FaceMesh({
-					locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-				});
-				faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
-				faceMesh.onResults(onResults);
-				return faceMesh;
+				if (typeof FaceMesh === 'undefined') {
+					console.warn('MediaPipe FaceMesh not loaded. Check network connection and HTTPS.');
+					if (warningEl) {
+						warningEl.textContent = 'Face detection model not loaded. Please check your internet connection and ensure the site uses HTTPS.';
+					}
+					return null;
+				}
+				try {
+					faceMesh = new FaceMesh({
+						locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+					});
+					faceMesh.setOptions({ maxNumFaces: 1, refineLandmarks: true, minDetectionConfidence: 0.5, minTrackingConfidence: 0.5 });
+					faceMesh.onResults(onResults);
+					return faceMesh;
+				} catch (e) {
+					console.error('FaceMesh initialization error:', e);
+					if (warningEl) {
+						warningEl.textContent = 'Failed to initialize face detection. Please refresh the page.';
+					}
+					return null;
+				}
 			}
 
 			async function loop() {
@@ -310,6 +325,18 @@
 			}
 
 			window.addEventListener('load', async () => {
+				// Check HTTPS requirement
+				if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+					if (distanceEl) {
+						distanceEl.textContent = '⚠️ HTTPS required for camera access';
+					}
+					if (warningEl) {
+						warningEl.textContent = 'This feature requires HTTPS. Please enable SSL/HTTPS on your domain (amplyopia.com).';
+					}
+					console.error('HTTPS required for camera access. Current protocol:', location.protocol);
+					return;
+				}
+
 				// Wait for video to have dimensions from existing camera stream (vision.js handles getUserMedia)
 				if (video) {
 					if (video.readyState < 2) {
@@ -318,8 +345,12 @@
 						resizeCanvasToVideo();
 					}
 				}
-				await ensureFaceMesh();
-				start();
+				const mesh = await ensureFaceMesh();
+				if (mesh) {
+					start();
+				} else {
+					console.warn('FaceMesh not available, distance detection will not work');
+				}
 			});
 		})();
 	</script>
