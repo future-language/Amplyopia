@@ -1098,7 +1098,7 @@ function slidePuzzleGame(startGameCallback) {
         "img/cartoon1.png", 
         "img/cartoon2.jpg",
         "img/cartoon3.jpg",
-        "img/cartoon4.png"
+        "img/cartoon4.jpg"
     ];
     // Get random image on reload
     const chosenImg = images[Math.floor(Math.random() * images.length)];
@@ -1393,6 +1393,7 @@ window.onload = function () {
         }, 2400);
     }, 2400);
 };
+
 
 
 
