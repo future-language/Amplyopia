@@ -1,0 +1,22 @@
+# robots.txt for amplyopia.com
+User-agent: *
+Allow: /
+
+# Allow all search engines to crawl
+Allow: /index.html
+Allow: /vision-test.html
+Allow: /guidelines.html
+Allow: /lazytest/
+Allow: /css/
+Allow: /js/
+
+# Disallow admin or private areas (if any)
+# Disallow: /admin/
+# Disallow: /private/
+
+# Sitemap location
+Sitemap: https://amplyopia.com/sitemap.xml
+
+# Crawl-delay (optional, adjust if needed)
+Crawl-delay: 1
+

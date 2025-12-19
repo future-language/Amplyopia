@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Color Vision Games</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<!-- Intro Splash -->
+<div id="intro-splash" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#000;z-index:9999;display:flex;align-items:center;justify-content:center;">
+    <img src="intro.gif" alt="Intro" style="max-width:100%;max-height:100%;">
+</div>
+
+<!-- Welcome Animation -->
+<div id="welcome-anim" style="position:fixed;top:0;left:0;width:100vw;height:100vh;background:#fff;z-index:9998;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 1.2s;">
+    <h1 style="font-family:'Comic Sans MS',cursive;color:#f875b9;font-size:2.5rem;animation:welcomeMove 1.5s;text-align: center;">Welcome to Color Vision Games</h1>
+    <div style="height:12px"></div>
+    <div style="color:orange;font-family:'Comic Sans MS',cursive;font-size:1.35rem;text-align: center;">By Retaj Ahmed Mohib &amp; Salma Ahmed Ahmed</div>
+</div>
+
+<div id="main-menu" class="center hidden">
+    <h1>Color Vision Games</h1>
+    <div class="level-select">
+        <button id="level1-btn">Level 1</button>
+        <button id="level2-btn" disabled>
+            Level 2 <span class="lock">🔒</span>
+        </button>
+    </div>
+    <div class="extras-container">
+        <div class="extras-grid">
+            <div id="videos-card" class="extra-card">🎥 Videos</div>
+        </div>
+    </div>
+</div>
+
+<div id="level-games" class="center hidden">
+    <h2 id="level-title">Level 1</h2>
+    <div id="games-list"></div>
+    <button id="back-main" class="small-btn">Back to Main Menu</button>
+</div>
+
+<div id="game-area" class="center hidden"></div>
+
+<div id="game-result" class="center hidden">
+    <h2 id="result-msg">Great job!</h2>
+    <div id="score-msg"></div>
+    <button id="back-to-games" class="small-btn">Back to Games</button>
+</div>
+
+<div id="gift-screen" class="center hidden">
+    <div class="gift-anim"></div>
+    <h2>Congratulations!</h2>
+    <div id="gift-msg"></div>
+    <button id="continue-btn" class="small-btn">Continue</button>
+</div>
+
+<div id="final-screen" class="center hidden">
+    <h2>You finished all games!</h2>
+    <div id="final-score"></div>
+    <button id="play-again" class="small-btn">Play Again</button>
+    <button id="return-main" class="small-btn">Return to Main Menu</button>
+</div>
+
+<!-- VIDEO SCREEN -->
+<div id="video-screen" class="center hidden">
+    <div class="video-box">
+        <h2>Treatment of lazy eye</h2>
+        <div class="iframe-wrap">
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/WK5z4dICJjk?si=KRX7iqFerxjwzEZ4"
+                frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </div>
+    <button id="video-back-btn" class="small-btn video-back-btn">Back</button>
+</div>
+
+<audio id="btn-hover-sound" src="click-21156.mp3" preload="auto"></audio>
+
+<!-- Lazy-eye Firebase project (separate from vision test) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+    window.LAZY_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyBZtcD0LFwFblHmjZ_kp4XaE-S6PZEepKg",
+        authDomain: "lazy-eye-4e3d0.firebaseapp.com",
+        projectId: "lazy-eye-4e3d0",
+        storageBucket: "lazy-eye-4e3d0.firebasestorage.app",
+        messagingSenderId: "123529416962",
+        appId: "1:123529416962:web:0f38d7621415ee1cbb321b"
+    };
+</script>
+<script src="../js/db.js"></script>
+<script src="script.js"></script>
+</body>
+</html>

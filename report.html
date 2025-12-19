@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" data-page="report">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    
+    <title>Reports | Amplyopia</title>
+    <meta name="description" content="View your latest Amplyopia vision test and lazy eye game results.">
+    <link rel="canonical" href="https://amplyopia.com/report.html">
+
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js for graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <button class="back-btn" id="back-btn" aria-label="Go back">←</button>
+            <a class="logo" href="index.html">VisionCare</a>
+        </div>
+    </header>
+
+    <main class="section">
+        <div class="container">
+            <h1>Reports</h1>
+            <p class="landing-note">Enter a patient name below to search for their test results.</p>
+
+            <!-- Search Interface -->
+            <div class="search-container">
+                <div class="search-box">
+                    <input type="text" id="patient-search" placeholder="Enter patient name to search..." class="search-input">
+                    <button id="btn-search" class="btn btn-primary">Search</button>
+                </div>
+                <div id="search-results" class="search-results" style="display: none;"></div>
+            </div>
+
+            <div class="report-toggle" id="report-toggle" style="display: none;">
+                <button id="btn-report-vision" class="btn primary">Latest Vision Test</button>
+                <button id="btn-report-lazy" class="btn">Latest Lazy Eye Games</button>
+            </div>
+
+            <div class="clear-data-container" id="clear-data-container" style="display: none;">
+                <button id="btn-clear-data" class="btn btn-danger">Clear All Test Data</button>
+            </div>
+
+            <div id="report-content" class="vt-card" style="display: none;">
+            </div>
+        </div>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>© <span id="year"></span> VisionCare</p>
+        </div>
+    </footer>
+
+    <!-- Firebase (compat) for simple CDN usage, shared by both projects -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script>
+        // Vision test Firebase project
+        window.FIREBASE_CONFIG = {
+            apiKey: "AIzaSyD43OELqQh9x129lWoYPDF5ejYDeJbHaKo",
+            authDomain: "amplyopia-1df6b.firebaseapp.com",
+            projectId: "amplyopia-1df6b",
+            storageBucket: "amplyopia-1df6b.firebasestorage.app",
+            messagingSenderId: "1061507123584",
+            appId: "1:1061507123584:web:2f2c91fb6845d0c1789965"
+        };
+        // Lazy-eye games Firebase project
+        window.LAZY_FIREBASE_CONFIG = {
+            apiKey: "AIzaSyBZtcD0LFwFblHmjZ_kp4XaE-S6PZEepKg",
+            authDomain: "lazy-eye-4e3d0.firebaseapp.com",
+            projectId: "lazy-eye-4e3d0",
+            storageBucket: "lazy-eye-4e3d0.firebasestorage.app",
+            messagingSenderId: "123529416962",
+            appId: "1:123529416962:web:0f38d7621415ee1cbb321b"
+        };
+    </script>
+
+    <script src="js/app.js" defer></script>
+    <script src="js/db.js" defer></script>
+    <script src="js/report.js" defer></script>
+</body>
+</html>
+
+
